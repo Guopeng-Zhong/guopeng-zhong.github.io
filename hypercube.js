@@ -128,6 +128,7 @@
   window.addEventListener('resize', resize);
   reducedMotion.addEventListener('change', update);
   matchMedia('(prefers-color-scheme: dark)').addEventListener('change', resize);
+  new MutationObserver(resize).observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
   new ResizeObserver(resize).observe(canvas);
   document.fonts.ready.then(resize);
   resize();

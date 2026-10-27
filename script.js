@@ -4,11 +4,23 @@
   lang=lang==='zh'?'zh':'en';
   document.documentElement.lang=lang==='zh'?'zh-CN':'en';
   document.querySelectorAll('[data-en][data-zh]').forEach(el=>{el.textContent=el.dataset[lang]});
+  document.querySelectorAll('[data-en-label]').forEach(el=>{const label=el.dataset[lang+'Label'];el.setAttribute('aria-label',label);el.title=label});
   buttons.forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.language===lang)));
   document.title=lang==='en'?'Guopeng Zhong':'钟国鹏 · Guopeng Zhong';
   try{localStorage.setItem('lang',lang)}catch(e){}
  }
  buttons.forEach(button=>button.addEventListener('click',()=>setLanguage(button.dataset.language)));
+ // System / light / dark. "System" removes data-theme so the CSS follows prefers-color-scheme.
+ const themeButtons=document.querySelectorAll('[data-theme-choice]');
+ function setTheme(choice){
+  choice=choice==='light'||choice==='dark'?choice:'system';
+  if(choice==='system')delete document.documentElement.dataset.theme;
+  else document.documentElement.dataset.theme=choice;
+  themeButtons.forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.themeChoice===choice)));
+  try{choice==='system'?localStorage.removeItem('theme'):localStorage.setItem('theme',choice)}catch(e){}
+ }
+ themeButtons.forEach(button=>button.addEventListener('click',()=>setTheme(button.dataset.themeChoice)));
+ setTheme(document.documentElement.dataset.theme);
  const reduced=()=>window.matchMedia('(prefers-reduced-motion: reduce)').matches;
  document.querySelectorAll('[data-scroll-top]').forEach(link=>link.addEventListener('click',event=>{
   event.preventDefault();
