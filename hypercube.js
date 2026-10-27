@@ -22,6 +22,15 @@
   let target = 0;
   let current = 0;
   let frame = 0;
+  let accent = '154,81,56';
+  let ink = '44,42,37';
+
+  // Colors come from the page's theme tokens so the drawing follows light and dark mode.
+  function readColors() {
+    const style = getComputedStyle(document.documentElement);
+    accent = style.getPropertyValue('--accent-rgb').trim() || accent;
+    ink = style.getPropertyValue('--ink-rgb').trim() || ink;
+  }
 
   function readProgress() {
     const paneScrolls = getComputedStyle(content).overflowY === 'auto';
@@ -69,14 +78,14 @@
       context.beginPath();
       context.moveTo(p.x, p.y);
       context.lineTo(q.x, q.y);
-      context.strokeStyle = `rgba(154,81,56,${alpha})`;
+      context.strokeStyle = `rgba(${accent},${alpha})`;
       context.lineWidth = 1 + Math.max(0, depth + 1.5) * 0.32;
       context.stroke();
     });
     points.forEach(point => {
       context.beginPath();
       context.arc(point.x, point.y, 1.4 + (point.w + 1) * 0.55, 0, Math.PI * 2);
-      context.fillStyle = `rgba(48,46,41,${Math.min(0.85, Math.max(0.2, 0.35 + (point.z + 1.5) * 0.15))})`;
+      context.fillStyle = `rgba(${ink},${Math.min(0.85, Math.max(0.2, 0.35 + (point.z + 1.5) * 0.15))})`;
       context.fill();
     });
   }
@@ -102,6 +111,7 @@
   }
 
   function resize() {
+    readColors();
     const rect = canvas.getBoundingClientRect();
     width = rect.width;
     height = rect.height;
@@ -117,6 +127,7 @@
   window.addEventListener('scroll', update, { passive: true });
   window.addEventListener('resize', resize);
   reducedMotion.addEventListener('change', update);
+  matchMedia('(prefers-color-scheme: dark)').addEventListener('change', resize);
   new ResizeObserver(resize).observe(canvas);
   document.fonts.ready.then(resize);
   resize();
